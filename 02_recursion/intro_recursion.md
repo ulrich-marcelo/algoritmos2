@@ -3,7 +3,7 @@ En esta sección nos iniciaremos en el concepto de recursión aplicado con el le
 
 ## Un problema recursivo
 
-maginemos que nos han encargado la tarea de censar los habitantes de un país. Para facilitar el ejemplo, sólo nos interesa averiguar la cantidad de habitantes. Un enfoque de resolución iterativo y lineal, tal como vimos en el paradigma imperativo, sería comenzar por el pueblo que se encuentre más al noroeste, tocar el timbre de la primera vivienda de la manzana más al noroeste, contar los habitantes de la misma, y avanzar en sentido este y luego sur, abarcando el resto de los pueblos del país uno a uno, repitiendo el conteo en cada vivienda. Sin dudas sería un recorrido muy largo, implicando un gran costo de traslado y probablemente alguna vivienda quede sin registrar. La tarea resulta realmente muy difícil de realizar por una persona.
+Imaginemos que nos han encargado la tarea de censar los habitantes de un país. Para facilitar el ejemplo, sólo nos interesa averiguar la cantidad de habitantes. Un enfoque de resolución iterativo y lineal, tal como vimos en el paradigma imperativo, sería comenzar por el pueblo que se encuentre más al noroeste, tocar el timbre de la primera vivienda de la manzana más al noroeste, contar los habitantes de la misma, y avanzar en sentido este y luego sur, abarcando el resto de los pueblos del país uno a uno, repitiendo el conteo en cada vivienda. Sin dudas sería un recorrido muy largo, implicando un gran costo de traslado y probablemente alguna vivienda quede sin registrar. La tarea resulta realmente muy difícil de realizar por una persona.
 
 Veamos un enfoque diferente, tratemos de **dividir este problema en otros problemas similares**, pero de **menor dimensión**. Podríamos decir que censar los habitantes de un país es similar a censar los habitantes de una provincia, ya que un país se divide en varias provincias. El problema es en realidad el mismo, sólo que **se ha divido en varios subproblemas de dimensión reducida**. Claramente, la tarea de censar una provincia sigue
 siendo lo suficientemente compleja para una persona. Por lo tanto, podemos proponer que el problema de censado de una provincia es similar a censar un partido. Como también es similar el problema de censar un partido en relación al censo de una comuna o barrio. Todos ellos son problemas divisibles en subproblemas similares con dimensiones reducidas.
@@ -42,7 +42,8 @@ def censar(zona: Zona) -> int:
 ```
 Nos apoyamos en una clase `Zona` que define de forma abstracta el concepto de país, provincia, departamento, etc. Asumimos que una vivienda tiene un atributo propio `habitantes` que nos dice la cantidad de personas que viven allí. El resto de las especializaciones de `Zona` tienen un atributo `subzonas` que es una lista de zonas que la conforman.
 
-De este ejemplo podemos definir una **estructura general** para modelar un problema recursivo.
+### Diseño de una operación recursiva
+Del ejemplo mencionado podemos definir una **estructura de operación general** para resolver un problema recursivo.
 ```
 funcion resolver(problema)
     si problema es simple entonces
@@ -58,6 +59,7 @@ funcion resolver(problema)
     finSi
 finFuncion
 ```
+Siempre debemos contemplar incorporar el o los casos bases para poder darle corte a las invocaciones recursivas, por eso se muestra aquí con un `if` bien explícito (aunque no siempre será necesariamente así). Luego en el caso recursivo (la sección del `else`), realizamos primero las divisiones necesarias en subproblemas y los utilizamos para resolver parcialmente el problema con invocaciones recursivas. Finalmente se combinan esas soluciones parciales para devolver el resultado de esa instancia del problema.
 
 ### Ejercicio: Modelar las zonas para censo
 Implementar las clases necesarias para modelar las diferentes zonas a censar, donde país es la más amplia y se compone de provincias, etc. Todas deben tener un atributo de subzonas que representa la lista de zonas que las conforman, excepto la clase de vivienda que tiene el atributo habitantes. Finalmente, incorporar la operación recursiva de censar como método en la clase abstracta `Zona`.
