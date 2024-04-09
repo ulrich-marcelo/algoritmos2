@@ -3,21 +3,22 @@
 
 def partes(lista:list[int])-> list[list[int]]:
     listaListas = [[]]
-    def partes_interna(lista_interna: list):
-        if not lista_interna:
-            pass
+    def partes_interna(lista_interna):
+        if len(lista_interna)==1:
+            listaListas.append(lista_interna)
         else:
-            listaListas.append(lista_interna.copy())
-            for i in lista_interna:
-                
+            inicial = lista_interna.pop(0)
+            partes_interna(lista_interna)
+            for i in listaListas.copy():
+                if not inicial in i:
+                    listaListas.append([inicial]+i)
+            
+    partes_interna(lista)
+    return listaListas
+
+print(partes([6,2,3,4]))
 
 
-
-
-
-
-
-    return [[]]
 
 
 
