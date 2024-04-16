@@ -12,7 +12,21 @@ mismo número en base decimal (37).
 '''
 
 def decimalBinario(numero : int) -> str:
-    return ''
+    residuos = []
+    def _decimalBinario(numero):
+        if numero != 0:     
+            residuo = numero%2
+            residuos.insert(0,str(residuo))
+            _decimalBinario(numero//2)
+    _decimalBinario(numero)
+    return "".join(residuos)
+
+
+
+
+
+
+print(decimalBinario(16))
 
 
 
