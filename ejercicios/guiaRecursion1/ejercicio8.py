@@ -1,23 +1,36 @@
-#Implementar recursion de Fibonacci
+#Definir la función recursiva mcd (máximo común divisor), que dados dos números
+#enteros positivos, retorne el máximo común divisor entre ellos.
 
-def termino_fibonacci_pila(n):
-    if n==1 or n==2:
-        return 1
+def divisoresRecursivo(x:int,divisores:list[int]=[],divisor:int=1):
+    if int(x/divisor) in divisores:
+        divisores.sort()
+        return divisores
     else:
-        return termino_fibonacci_pila(n-1) + termino_fibonacci_pila(n-2)
+        if x%divisor==0:
+            divisores.append(divisor)
+            divisores.append(int(x/divisor))
+        return divisoresRecursivo(x,divisores,divisor+1)
+    
+print(divisoresRecursivo(15))
 
-print(termino_fibonacci_pila(6))
 
 
-def termino_fibonacci_cola(n):
-    def fibo_interno(n,acum,acum2):
-        if n == 1:
-            return acum + acum2
-        else:
-            aux = acum2
-            acum2 += acum
-            acum = aux
-            return fibo_interno(n-1,acum,acum2)
-    return fibo_interno(n,0,1)
+def MCD(a, b):
+    if a == 0:
+        return b
+    return MCD(b % a, a)
 
-print(termino_fibonacci_pila(6))
+print(MCD(27,45))
+
+
+
+
+
+
+
+
+
+
+
+
+

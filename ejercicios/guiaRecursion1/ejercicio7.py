@@ -44,12 +44,24 @@ def unosBinario(binario : str)->int:
         raise ValueError("El valor ingresado no es un string binario!!")
     return reduce(lambda x,y: int(x)+int(y),binario,0)
 
+def unosBinarioRecursivo(binario:str)->int:
+    if len(binario) ==1:
+        return int(binario == "1")
+    else:
+        return int(binario[0]=="1") + unosBinarioRecursivo(binario[1:]) #type: ignore
+    
+
 def binarioDecimal(binario:str)->int:
-    return 0
+    if len(binario)==1:
+        return int(binario)
+    else:
+        return int(binario[0]) * 2 ** (len(binario)-1) + binarioDecimal(binario[1:])
 
 print(decimalBinario(16))
 print(cambioBaseDecimal(178,36))
 print(unosBinario('10101110111'))
+print(unosBinarioRecursivo('10101110111'))
+print(binarioDecimal("1011"))
 
 
 
