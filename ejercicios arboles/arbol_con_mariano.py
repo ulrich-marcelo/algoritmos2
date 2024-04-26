@@ -91,15 +91,47 @@ class ArbolBinario(Generic[T]):
         if self.es_vacio():
             return []
         else:
-            return   self.si().preorden()+ [self.dato()] + self.sd().preorden() 
+            return   self.si().inorden()+ [self.dato()] + self.sd().indorden() 
 
     def postorden(self) -> list[T]:
         if self.es_vacio():
             return []
         else:
-            return   self.si().preorden() + self.sd().preorden() + [self.dato()]  
+            return   self.si().postorden() + self.sd().postorden() + [self.dato()]  
+        
+    def preorden_tail(self)->list[T]:
+        """Eliminamos la recursion de pila usando una pila explicita."""
+        def _bfs(pila: list[ArbolBinario[T]],camino:list[T]) -> list[T]:
+
+            if not pila:
+                return camino
+            else:
+                actual = pila.pop()
+                if not actual.es_vacio():    
+                    camino.append(actual.dato())
+                    pila.append(actual.sd())
+                    pila.append(actual.si())
+                return _bfs(pila,camino)
+
+        return _bfs([self],[])
     
-    def __str__(self):
+    def preorden_iter(self) ->list[T]:
+        """Eliminamos la recursion de pila usando una pila explicita e iterando. Antes seguia siendo de pila por como funciona python"""
+        pila = [self]
+        camino = []
+        while pila != []:
+            actual = pila.pop()
+            if not actual.es_vacio():    
+                camino.append(actual.dato())
+                pila.append(actual.sd())
+                pila.append(actual.si())
+        return camino
+
+
+
+
+    
+    def __str__(self) -> str:
         def recorrer(t: ArbolBinario[T],nivel:int) -> str:
             tab = "_"*4*nivel
             if t.es_vacio():
@@ -112,6 +144,8 @@ class ArbolBinario(Generic[T]):
                 return tab
         return recorrer(self,0)
     
+    def es_hoja(self) -> bool:
+        return  not self.es_vacio() and self.si().es_vacio() and self.sd().es_vacio()
 
     def copy(self) -> "ArbolBinario[T]":
         if self.es_vacio():
@@ -138,8 +172,57 @@ class ArbolBinario(Generic[T]):
                 return _bfs(cola,camino)
 
         return _bfs([self],[])
+    
+    
         
         
+        
+    def hojas(self) ->list[T]:
+        if self.es_vacio():
+            return []
+        elif self.es_hoja():
+            return [self.dato()]
+        else:
+            return   self.si().hojas() + self.sd().hojas() 
+        
+    def sin_hojas(self) -> "ArbolBinario[T]":
+        """Devuelvo copia para no hacer lio"""
+        if self.es_vacio():
+            return ArbolBinario()
+        elif self.es_hoja():
+            return ArbolBinario()
+        else:
+            copia = ArbolBinario.crear_nodo(self.dato())
+            copia.insertar_si(self.si().sin_hojas())
+            copia.insertar_sd(self.sd().sin_hojas())
+            return copia
+    
+    def podar(self,dato:T) -> "ArbolBinario[T]":
+        """Esto es post pruning, voy tomando metrica, corto, si no me cambia, sigo."""
+        if self.es_vacio() or self.dato() == dato:
+            return ArbolBinario()
+        else:
+            copia = ArbolBinario.crear_nodo(self.dato())
+            copia.insertar_si(self.si().podar(dato))
+            copia.insertar_sd(self.sd().podar(dato))
+            return copia
+        
+    def espejo(self) -> "ArbolBinario[T]":
+        if self.es_vacio():
+            return ArbolBinario()
+        else:
+            copia = ArbolBinario.crear_nodo(self.dato())
+            copia.insertar_si(self.sd().espejo())
+            copia.insertar_sd(self.si().espejo())
+            return copia
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     t = ArbolBinario.crear_nodo(1)
@@ -151,6 +234,12 @@ if __name__ == "__main__":
     n7 = ArbolBinario.crear_nodo(7)
     n8 = ArbolBinario.crear_nodo(8)
     n9 = ArbolBinario.crear_nodo(9)
+    n10 = ArbolBinario.crear_nodo(10)
+    n11 = ArbolBinario.crear_nodo(11)
+
+
+
+
 
     t.insertar_si(n2)
     t.insertar_sd(n3)
@@ -159,12 +248,23 @@ if __name__ == "__main__":
     n2. insertar_sd(n5)
 
     n4.insertar_si(n8)
-    n4.insertar_sd(n9)
 
     n3.insertar_si(n6)
     n3.insertar_sd(n7)
 
-    print(t.bfs())
+    n7.insertar_sd(n11)
+
+    n5.insertar_si(n9)
+    n5.insertar_sd(n10)
+
+
+    print(t.hojas())
+
+    t2: ArbolBinario[int] = t.espejo()
+
+    print(t2.preorden())
+    print(t2.preorden_tail())
+    print(t2.preorden_iter())
 
 
 
