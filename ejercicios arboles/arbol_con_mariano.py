@@ -7,7 +7,7 @@ T = TypeVar("T")
 
 class NodoAB(Generic[T]):
     def __init__(self,dato:T) -> None:
-        self.valor = dato
+        self.dato = dato
         self.si : ArbolBinario[T] = ArbolBinario()
         self.sd : ArbolBinario[T] = ArbolBinario()
 
@@ -53,7 +53,7 @@ class ArbolBinario(Generic[T]):
 
     @Decoradores.validar_no_es_vacio
     def dato(self)-> T:
-        return self.raiz.valor #type:ignore
+        return self.raiz.dato #type:ignore
 
     @Decoradores.validar_no_es_vacio
     def insertar_si(self,si:"ArbolBinario[T]"):
