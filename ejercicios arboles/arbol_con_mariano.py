@@ -6,13 +6,19 @@ from functools import wraps
 T = TypeVar("T")
 
 class NodoAB(Generic[T]):
-    def __init__(self,dato:T) -> None:
+    def __init__(self,dato:T ,si: "Optional[ArbolBinario[T]]" = None, sd: "Optional[ArbolBinario[T]]" = None) -> None:
         self.dato = dato
-        self.si : ArbolBinario[T] = ArbolBinario()
-        self.sd : ArbolBinario[T] = ArbolBinario()
+        self.si: ArbolBinario[T] = ArbolBinario() if si is None else si
+        self.sd: ArbolBinario[T] = ArbolBinario() if sd is None else sd
+
+    def __str__(self):
+        return self.dato
 
 
 class ArbolBinario(Generic[T]):
+    def __init__(self) -> None:
+        self.raiz = None
+
 
     class Decoradores:
         @classmethod
@@ -25,17 +31,16 @@ class ArbolBinario(Generic[T]):
             return wrapper
 
 
-    def __init__(self) -> None:
-        self.raiz = None
+    
 
 
     @staticmethod #Se usa para tener una funcion que podria estar afuera, adentro. Asi empaquetamos. NO LE PASAMOS SELF, eso es para metodos de instancia
-    def crear_nodo(dato:T) -> "ArbolBinario[T]":
-        nuevo = ArbolBinario()
-        nuevo.raiz = NodoAB(dato)
-        return nuevo
+    def crear_nodo(dato: T, si: "Optional[ArbolBinario[T]]" = None, sd: "Optional[ArbolBinario[T]]" = None) -> "ArbolBinario[T]":
+        t = ArbolBinario()
+        t.raiz = NodoAB(dato, si, sd)
+        return t
     
-    def es_vacio(self)->bool:
+    def es_vacio(self) -> bool:
         return self.raiz is None
     
     
@@ -53,18 +58,21 @@ class ArbolBinario(Generic[T]):
 
     @Decoradores.validar_no_es_vacio
     def dato(self)-> T:
+        assert self.raiz is not None
         return self.raiz.dato #type:ignore
 
     @Decoradores.validar_no_es_vacio
     def insertar_si(self,si:"ArbolBinario[T]"):
+        assert self.raiz is not None
         self.raiz.si = si #type:ignore
 
     @Decoradores.validar_no_es_vacio
     def insertar_sd(self,sd:"ArbolBinario[T]"):
+        assert self.raiz is not None
         self.raiz.sd = sd #type:ignore
 
-    def insertar_raiz(self,dato : T):
-        self.raiz = NodoAB(dato)
+    def set_raiz(self,nodo : NodoAB[T]):
+        self.raiz = nodo
 
     
     def altura(self)->int:
@@ -81,25 +89,25 @@ class ArbolBinario(Generic[T]):
 
 
 
-    def preorden(self) -> list[T]:
+    def preorder(self) -> list[T]:
         if self.es_vacio():
             return []
         else:
-            return  [self.dato()] + self.si().preorden() + self.sd().preorden() 
+            return  [self.dato()] + self.si().preorder() + self.sd().preorder() 
 
-    def inorden(self) -> list[T]:
+    def inorder(self) -> list[T]:
         if self.es_vacio():
             return []
         else:
-            return   self.si().inorden()+ [self.dato()] + self.sd().indorden() 
+            return   self.si().inorder()+ [self.dato()] + self.sd().indorden() 
 
-    def postorden(self) -> list[T]:
+    def postorder(self) -> list[T]:
         if self.es_vacio():
             return []
         else:
-            return   self.si().postorden() + self.sd().postorden() + [self.dato()]  
+            return   self.si().postorder() + self.sd().postorder() + [self.dato()]  
         
-    def preorden_tail(self)->list[T]:
+    def preorder_tail(self)->list[T]:
         """Eliminamos la recursion de pila usando una pila explicita."""
         def _bfs(pila: list[ArbolBinario[T]],camino:list[T]) -> list[T]:
 
@@ -115,7 +123,7 @@ class ArbolBinario(Generic[T]):
 
         return _bfs([self],[])
     
-    def preorden_iter(self) ->list[T]:
+    def preorder_iter(self) ->list[T]:
         """Eliminamos la recursion de pila usando una pila explicita e iterando. Antes seguia siendo de pila por como funciona python"""
         pila = [self]
         camino = []
@@ -262,9 +270,9 @@ if __name__ == "__main__":
 
     t2: ArbolBinario[int] = t.espejo()
 
-    print(t2.preorden())
-    print(t2.preorden_tail())
-    print(t2.preorden_iter())
+    print(t2.preorder())
+    print(t2.preorder_tail())
+    print(t2.preorder_iter())
 
 
 

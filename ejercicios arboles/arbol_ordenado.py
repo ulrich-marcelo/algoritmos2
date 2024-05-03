@@ -71,12 +71,85 @@ class ArbolBinarioOrdenado(ArbolBinario[T]):
         else:
             self.sd().insertar(valor)
 
-    def pertenece(self, valor: T) -> bool:
-        pass
+    
 
     @staticmethod
     def convertir_ordenado(arbol_binario: ArbolBinario[T]) -> "ArbolBinarioOrdenado[T]":
         pass
+
+
+
+
+
+    def pertenece(self,valor : T) -> bool:
+        def buscar_interna(
+            arbol: "ArbolBinarioOrdenado[T]", 
+        ) -> bool:
+            if arbol.es_vacio():
+                return False
+            elif valor == arbol.dato():
+                return True
+            return buscar_interna(arbol.si()) or buscar_interna(arbol.sd())
+        
+        return buscar_interna(self)
+    
+
+    def max(self) -> "ArbolBinarioOrdenado[T]":
+        if self.es_vacio():
+            raise ValueError("AV no tiene max")
+        elif not self.sd().es_vacio():
+            return self.sd().max()
+        else:
+            return self
+    def max_con_pred(self)-> tuple["ArbolBinarioOrdenado[T]|None","ArbolBinarioOrdenado[T]|None"]: 
+        if self.es_vacio():
+            return None,None
+        elif self.sd().es_vacio():
+            return self,None
+        elif self.sd().sd().es_vacio():
+            return self.sd(),self
+        else:
+            return self.sd().max_con_pred()
+
+    def eliminar(self,valor:T) -> None:
+        def eliminar_fusion(t: ArbolBinarioOrdenado[T])->None:
+            t.si().max().insertar_sd(t.sd())
+            t.raiz = t.si().raiz
+
+        def eliminar_copia(t: ArbolBinarioOrdenado[T]):
+            max,pred = t.si().max_con_pred()
+            if max is not None and pred is not None:
+                t.raiz.dato = max.dato()
+                pred.insertar_sd(max.si())
+
+
+
+        if self.es_vacio():
+            return
+        elif self.dato() == valor:
+            if self.es_hoja():
+                self.raiz = None
+            elif not self.sd().es_vacio() and not self.si().es_vacio():
+                eliminar_fusion(self)
+            elif not self.sd().es_vacio():
+                self.raiz = self.sd().raiz
+            else:
+                self.raiz = self.si().raiz
+        elif valor < self.dato():
+            self.si().eliminar(valor)
+        else:
+            self.sd().eliminar(valor)
+
+
+        
+
+
+        
+
+    
+    
+
+
         
 
 def main():
@@ -102,6 +175,9 @@ def main():
     print(f'Ordenado?: {t.es_ordenado()}')
 
     print(f'Tiene 12: {t.pertenece(12)}')
+
+    t.eliminar(15)
+    print(t)
 
 if __name__ == "__main__":
     main()
