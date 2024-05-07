@@ -70,25 +70,115 @@ class ArbolN(Generic[T]):
             return [] if not bosque else bosque[0].preorder3() + preorder_n(bosque[1:])
         return [self.dato] + preorder_n(self.subarboles)
     
-    def __eq__(self, otro: "ArbolN[T]") -> bool:
+    def __eq__(self, otro: "ArbolN[T]") -> bool: #type:ignore
         pass
 
-    def bfs(self) -> list[T]:
-        pass
+    def bfs(self) -> list[T]: #type:ignore
+        def recorrer():
+            if q:
+                actual = q.pop()
+                lista.append(actual.dato)
+                for subarbol in actual.subarboles:
+                    q.insert(0,subarbol)#type:ignore
+                recorrer()
+        q = [self]
+        lista = []
+        recorrer()
+        return lista
     
-    def posorder(self) -> list[T]:
-        pass
+    def postorder(self) -> list[T]: #type:ignore
+        return reduce(lambda recorrido, subarbol:   subarbol.postorder() + recorrido, self.subarboles[::-1], [self.dato])
 
-    def nivel(self, x: T) -> int:
-        pass
+    def postorder2(self) -> list[T]:
+        recorrido = [self.dato]
+        for subarbol in self.subarboles[::-1]:
+            recorrido = subarbol.postorder2() + recorrido
+        return recorrido
     
-    def copy(self) -> "ArbolN[T]":
+    def postorder3(self) -> list[T]:
+        def postorder_n(bosque: list[ArbolN[T]]) -> list[T]:
+            return [] if not bosque else postorder_n(bosque[1:]) + bosque[0].postorder3()
+        return postorder_n(self.subarboles[::-1]) + [self.dato]
+
+
+    def nivel(self,x:T) -> int:
+        def nivel_n(lista,acum) -> int:
+            if not lista:
+                return 0
+            else:
+                index = max([n.nivel(x) for n in lista])
+                return index + acum if index>0 else 0
+        if self.es_hoja():
+            return 0
+        elif self.dato == x:
+            return 1
+        else:
+            return nivel_n(self.subarboles,0) 
+
+
+
+    def nivel2(self, x: T) -> int: #type:ignore
+        if self.es_hoja():
+            return  0
+        elif self.dato == x:
+            return 1
+        else:
+            lista_busqueda = [n.nivel(x) for n in self.subarboles]
+            return max(lista_busqueda) + 1 if sum(lista_busqueda)>0 else 0
+        
+    def nivel3(self,x:T): #de tomi
+        def buscar(t,x):
+            if x== t.dato:
+                return 1,True
+            elif t.es_hoja():
+                return 2,False
+            else:
+                found = False
+                n=0
+                i=0
+                while not found and i< len(t.subarboles):
+                    m,found = buscar(t.subarboles[i],x)
+                    if not found:
+                        n = max(n,m)
+                    i +=1
+                return n+1,found
+        return buscar(self,x)[0]
+        
+
+
+    def ramas(self) -> list[list[T]]:
+        if self.es_hoja():
+            return [[self.dato]]
+        else:
+            ramas = []
+            for subarbol in self.subarboles:
+                ramas += subarbol.ramas()
+            return [ [self.dato]+rama for rama in ramas]
+        
+    def ramas2(self) -> list[list[T]]:
+        if self.es_hoja():
+            return [[self.dato]]
+        else:
+            return [[self.dato]+rama[0] for rama in [[]+subarbol.ramas() for subarbol in self.subarboles]]
+        
+            
+
+    #antecesores y sin ramas
+
+
+
+    def copy(self) -> "ArbolN[T]": #type:ignore
         pass
         
-    def sin_hojas(self) -> "ArbolN[T]":
-        pass
+    def sin_hojas(self) -> "ArbolN[T]": #type:ignore
+        for sub in self.subarboles:
+            if not sub.es_hoja():
+                self.insertar_subarbol(sub.sin_hojas())
+            self.subarboles.remove(sub)
+        return self
+
     
-    def recorrido_guiado(self, direcciones: list[int]) -> T:
+    def recorrido_guiado(self, direcciones: list[int]) -> T:#type:ignore
         pass
 
 
@@ -120,19 +210,24 @@ def main():
     print(f'DFS preorder : {t.preorder()}')
     print(f'DFS preorder2: {t.preorder2()}')
     print(f'DFS preorder3: {t.preorder3()}')
-    print(f'DFS posorder: {t.posorder()}')
+    print(f'DFS postorder: {t.postorder()}')
+    print(f'DFS postorder2: {t.postorder2()}')
+    print(f'DFS postorder3: {t.postorder3()}')
+    
 
-    print(f'Nivel de 9: {t.nivel(9)}')
-    print(f'Nivel de 13: {t.nivel(13)}')
+    print(f'Nivel de 9: {t.nivel3(9)}')
+    print(f'Nivel de 13: {t.nivel3(13)}')
+    print(t.ramas2())
+    print(t.sin_hojas())
 
-    t2 = t.copy()
-    t3 = t2.sin_hojas()
-    print(t)
-    print(t2)
-    print(t3)
-    print(f't == t2 {t == t2}')
+    # t2 = t.copy()
+    # t3 = t2.sin_hojas()
+    # print(t)
+    # print(t2)
+    # print(t3)
+    # print(f't == t2 {t == t2}')
 
-    print(f'recorrido_guiado [2,0,0]: {t2.recorrido_guiado([2,0,0])}')
+    # print(f'recorrido_guiado [2,0,0]: {t2.recorrido_guiado([2,0,0])}')
 
 
 if __name__ == '__main__':

@@ -74,7 +74,7 @@ class ArbolBinarioOrdenado(ArbolBinario[T]):
     
 
     @staticmethod
-    def convertir_ordenado(arbol_binario: ArbolBinario[T]) -> "ArbolBinarioOrdenado[T]":
+    def convertir_ordenado(arbol_binario: ArbolBinario[T]) -> "ArbolBinarioOrdenado[T]": #type:ignore
         pass
 
 
@@ -119,7 +119,7 @@ class ArbolBinarioOrdenado(ArbolBinario[T]):
         def eliminar_copia(t: ArbolBinarioOrdenado[T]):
             max,pred = t.si().max_con_pred()
             if max is not None and pred is not None:
-                t.raiz.dato = max.dato()
+                t.raiz.dato = max.dato() #type:ignore
                 pred.insertar_sd(max.si())
 
 
@@ -153,7 +153,7 @@ class ArbolBinarioOrdenado(ArbolBinario[T]):
         
 
 def main():
-    t: ArbolBinarioOrdenado[int] = ArbolBinarioOrdenado()
+    t: ArbolBinarioOrdenado[int] = ArbolBinarioOrdenado() #type:ignore
     t.insertar(10)
     t.insertar(5)
     t.insertar(15)
@@ -166,7 +166,7 @@ def main():
     print(t.es_ordenado())
     print(t)
 
-    t2: ArbolBinarioOrdenado[int] = ArbolBinarioOrdenado()
+    t2: ArbolBinarioOrdenado[int] = ArbolBinarioOrdenado() #type:ignore
     t2.insertar(8)
     # t2.insertar(11)   # Descomentar para probar la excepción al violar el orden
     t2.insertar(6)
