@@ -46,9 +46,13 @@ ArbolDeDecision(datos,criterio,poda)
 class ArbolDeDecision():
     def __init__(self,datos,criterio,poda) -> None:
         self.raiz = NodoID3(datos,criterio)
+        self.funcDivisionNodos = len
 
     def getCriterio(self):
         return self.raiz.criterio
+    
+    def engendrarHijo(self):
+        self.raiz.engendrar(self.funcDivisionNodos(self.datos.columns))
     
 """Opociones: investigar RPP (leer el codigo fuente de sklearn) o implementarlo sin RPP (hacerlo por eliminacion de nodos y chau)
 Efectivamente, si eliminas una hoja, redistribuis los datos a los hermanos"""
