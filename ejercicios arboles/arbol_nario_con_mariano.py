@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Optional
 from functools import reduce
 
 T = TypeVar('T')
@@ -164,7 +164,83 @@ class ArbolN(Generic[T]):
             
 
     #antecesores y sin ramas
-
+    
+    def antecesores(self,dato:T) ->list[T]:
+        # caso base 1: self.dato == dato
+        # caso base 2: self.es_hoja() y no es valor
+        # caso recursivo: no es hoja y 
+        if self.dato == dato:
+            return [dato]
+        elif self.es_hoja():
+            return []
+        else:
+            i=0
+            res = []
+            while i< len(self.subarboles) and not res:
+                res = self.subarboles[i].antecesores(dato)
+                i+=1
+            if res:
+                if res[0] == dato:
+                    res.pop()
+                res.insert(0,self.dato)
+            return res
+    
+    def antecesores2(self,dato:T) -> list[T]:
+        def interna(arbol:ArbolN) ->list[T]:
+            if arbol.dato == dato:
+                return [dato]
+            elif arbol.es_hoja():
+                return []
+            else:
+                i=0
+                res = []
+                while i<len(arbol.subarboles) and not res:
+                    res = interna(arbol.subarboles[i])
+                    i+=1
+                if res:
+                    res.insert(0,arbol.dato)
+                return res
+        res = interna(self)
+        res.pop()
+        return res
+    
+    
+    def antecesores3(self,dato:T) ->list[T]:
+        # caso base 1: self.dato == dato
+        # caso base 2: self.es_hoja() y no es valor
+        # caso recursivo: no es hoja y 
+        if self.dato == dato or self.es_hoja():
+            return []
+        else:
+            i=0
+            res = []
+            encontrado = False
+            while i< len(self.subarboles) and not encontrado:
+                if self.subarboles[i]==dato:
+                    encontrado = True
+                else: 
+                    res = self.subarboles[i].antecesores(dato)
+                    encontrado = bool(res)
+                i+=1
+            if encontrado:
+                res.insert(0,self.dato)
+            return res
+        
+    def antecesores4(self,dato:T)->list[T]:
+        def interna(arbol:ArbolN,antecesores : list[T])->list[T]:
+            if arbol.dato == dato:
+                return antecesores
+            elif arbol.es_hoja():
+                return []
+            else:
+                antecesores.append(arbol.dato)
+                i=0
+                res = []
+                while i<len(arbol.subarboles) and not res:
+                    res = interna(arbol.subarboles[i],antecesores.copy())
+                    i+=1
+                return res        
+        return interna(self,[])
 
 
     def copy(self) -> "ArbolN[T]": #type:ignore
@@ -178,8 +254,15 @@ class ArbolN(Generic[T]):
         return self
 
     
-    def recorrido_guiado(self, direcciones: list[int]) -> T:#type:ignore
-        pass
+    def recorrido_guiado(self, direcciones: list[int]) -> Optional[T]:#type:ignore
+        if not direcciones:
+            return self.dato
+        else:
+                direc = direcciones.pop(0)
+                if direc >= len(self.subarboles):
+                    raise ValueError("No existe la direccion")
+                return self.subarboles[direc].recorrido_guiado(direcciones)
+     
 
 
 def main():
@@ -202,6 +285,10 @@ def main():
     n7.insertar_subarbol(n9)
     
     print(t)
+    print(t.antecesores4(9))
+    print(t.recorrido_guiado([2,0,0]))
+    
+
 
     print(f'Altura: {t.altura()}')
     print(f'Nodos: {len(t)}')
@@ -219,7 +306,9 @@ def main():
     print(f'Nivel de 13: {t.nivel3(13)}')
     print(t.ramas2())
     print(t.sin_hojas())
-
+    print(t)
+    
+    
     # t2 = t.copy()
     # t3 = t2.sin_hojas()
     # print(t)
@@ -234,60 +323,6 @@ if __name__ == '__main__':
     main()
 
 
-
-
-class Criterion():
-    def calcularImpureza(self,nodo:ArbolN):
-        ...
-    def mejorParticion(self,datos:pd.DataFrame):
-        ...
-    def rankingFeatures(self,datos):
-        ...
-
-class CriterionContiuous(Criterion):
-    def calcularUmbral(self,datos:pd.Dataframe, feature:str):
-        ...
-
-
-class Entropia(CriterionContiuous):
-    def mejorParticion(self, datos: pd.DataFrame):
-        #para cada feature, evaluo si es continuo o categorico y decido
-        '''
-        if categorico:
-            Entropia(D)
-            IG(D) para feature y lo 
-
-        else: contiuo
-            IG() SI() -> GR()
-        
-        A partir de lista de feature + puntaje, elijo max()
-
-        '''
-
-class NodoID3():
-    def __init__(self) -> None:
-        self.criterio = ...
-    def engendrar(self):
-        feature_corte = self.criterio.mejorParticion(self.datos)
-        ...
-
-class NodoC45():
-    def __init__(self) -> None:
-        self.criterio = ...
-    def engendrar(self):
-        feature_corte = self.criterio.mejorParticion(self.datos)
-        umbral = self.criterio.calcularUmbral(self.datos,feature_corte)
-
-ArbolDeDecision(datos,criterio,poda)
-
-
-class ArbolDeDecision():
-    def __init__(self,datos,criterio,poda) -> None:
-        self.raiz = NodoID3(datos,criterio)
-
-    def getCriterio(self):
-        return self.raiz.criterio
-    
 
 
 
