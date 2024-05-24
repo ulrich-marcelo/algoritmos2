@@ -182,7 +182,7 @@ class Grafo(Generic[T]):
                         recorrido.append(nodo)
                     else:
                         if not nodo in recorrido:
-                            encontrado = dfs(nodo,recorrido)
+                            encontrado = dfs(nodo,buscado,recorrido)
                 return encontrado
             else:
                 return False
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     print(graf.dfs())
     print(graf.dfs_origen(8))
     print(graf.bfs())
-    print(graf.existe_conexion(1,7))
+    print(graf.existe_conexion(1,8))
 
     
 
